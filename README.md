@@ -2,6 +2,8 @@
 
 A local four-peer traffic intersection written in Python. Four road processes elect a leader, replicate phase decisions, generate local car demand, and fail closed when they cannot agree. A separate read-only observer checks traffic safety and serves the live SVG browser view.
 
+Live demo: <https://web-production-12d20.up.railway.app>
+
 ## Run it
 
 Python 3.11 or newer is required.
