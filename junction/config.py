@@ -42,7 +42,7 @@ QUEUE_LIMIT = 20
 HEAVY_QUEUE = 10
 MAX_JSON_LINE_BYTES = 1_000_000
 VISUALIZER_HOST = os.getenv("VISUALIZER_HOST", "127.0.0.1")
-VISUALIZER_PORT = int(os.getenv("VISUALIZER_PORT", "8080"))
+VISUALIZER_PORT = int(os.getenv("VISUALIZER_PORT", os.getenv("PORT", "8080")))
 DATA_DIR = Path(os.getenv("DATA_DIR", "data")).resolve()
 
 
