@@ -1,0 +1,6 @@
+[project]
+name = "junction-four"
+version = "1.0.0"
+description = "A four-peer traffic intersection with a live observer"
+requires-python = ">=3.11"
+dependencies = ["antithesis==0.3.1"]

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Junction Four · Live traffic system</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <!-- This page only observes the road processes. It cannot change a signal. -->
+  <header class="masthead">
+    <a class="identity" href="/" aria-label="Junction Four home">
+      <svg viewBox="0 0 40 40" width="36" height="36" aria-hidden="true" focusable="false"><path d="M16 2h8v14h14v8H24v14h-8V24H2v-8h14z"/><circle cx="20" cy="20" r="3"/></svg>
+      <span><strong>Junction Four</strong><small>four road processes · one shared phase</small></span>
+    </a>
+    <div class="system-line" aria-live="polite">
+      <i id="connection-lamp" data-state="starting"></i>
+      <span id="system-status">Connecting to road processes</span>
+      <time id="clock">--:--:--</time>
+    </div>
+  </header>
+
+  <main class="workbench">
+    <!-- Live traffic and queue state. -->
+    <section class="intersection-module" aria-labelledby="intersection-title">
+      <div class="module-heading">
+        <div>
+          <h1 id="intersection-title">Intersection</h1>
+          <p id="phase-summary">Waiting for a committed phase</p>
+        </div>
+        <div class="phase-readout" aria-live="polite">
+          <strong id="phase-stage">ALL RED</strong>
+          <span id="phase-countdown">standby</span>
+        </div>
+      </div>
+
+      <div class="scope-frame">
+        <svg id="intersection" viewBox="0 0 800 600" width="800" height="600" role="img" aria-labelledby="scope-title scope-description">
+          <title id="scope-title">Live four-way traffic intersection</title>
+          <desc id="scope-description">Four vertical traffic signals control cars reported by four distributed road processes.</desc>
+
+          <rect class="ground" width="800" height="600"/>
+          <path class="road" d="M300 0h200v200h300v200H500v200H300V400H0V200h300z"/>
+          <path class="lane-rule" d="M400 0v600M0 300h800"/>
+          <path class="stop-rule" d="M306 158h88M406 442h88M258 306v88M542 206v88"/>
+
+          <g id="movement-layer"></g>
+
+          <g id="signal-north" class="traffic-signal" data-state="red" transform="translate(430 82)">
+            <rect width="42" height="90" rx="7"/><circle class="bulb red" cx="21" cy="18" r="10"/><circle class="bulb yellow" cx="21" cy="45" r="10"/><circle class="bulb green" cx="21" cy="72" r="10"/><text x="21" y="108">N</text>
+          </g>
+          <g id="signal-east" class="traffic-signal" data-state="red" transform="translate(548 255)">
+            <rect width="42" height="90" rx="7"/><circle class="bulb red" cx="21" cy="18" r="10"/><circle class="bulb yellow" cx="21" cy="45" r="10"/><circle class="bulb green" cx="21" cy="72" r="10"/><text x="21" y="108">E</text>
+          </g>
+          <g id="signal-south" class="traffic-signal" data-state="red" transform="translate(328 428)">
+            <rect width="42" height="90" rx="7"/><circle class="bulb red" cx="21" cy="18" r="10"/><circle class="bulb yellow" cx="21" cy="45" r="10"/><circle class="bulb green" cx="21" cy="72" r="10"/><text x="21" y="108">S</text>
+          </g>
+          <g id="signal-west" class="traffic-signal" data-state="red" transform="translate(210 255)">
+            <rect width="42" height="90" rx="7"/><circle class="bulb red" cx="21" cy="18" r="10"/><circle class="bulb yellow" cx="21" cy="45" r="10"/><circle class="bulb green" cx="21" cy="72" r="10"/><text x="21" y="108">W</text>
+          </g>
+
+          <g class="queue-readout" transform="translate(315 18)"><rect width="170" height="34" rx="4"/><text x="85" y="22">NORTH QUEUE <tspan id="queue-north">0</tspan></text></g>
+          <g class="queue-readout" transform="translate(612 283)"><rect width="170" height="34" rx="4"/><text x="85" y="22">EAST QUEUE <tspan id="queue-east">0</tspan></text></g>
+          <g class="queue-readout" transform="translate(315 548)"><rect width="170" height="34" rx="4"/><text x="85" y="22">SOUTH QUEUE <tspan id="queue-south">0</tspan></text></g>
+          <g class="queue-readout" transform="translate(18 283)"><rect width="170" height="34" rx="4"/><text x="85" y="22">WEST QUEUE <tspan id="queue-west">0</tspan></text></g>
+
+          <g id="collision-layer"></g>
+        </svg>
+        <div id="critical-banner" class="critical-banner" role="alert" hidden>
+          <span>Crash detected</span>
+          <strong id="critical-message"></strong>
+        </div>
+      </div>
+      <p class="observer-note">Read-only view. The browser cannot change a light.</p>
+    </section>
+
+    <!-- Consensus and safety state reported by the observer. -->
+    <aside class="telemetry" aria-label="Distributed system status">
+      <section class="leader-instrument" aria-labelledby="leader-title">
+        <h2 id="leader-title">Current leader</h2>
+        <div class="leader-name" id="leader-name">ELECTING</div>
+        <dl class="leader-facts">
+          <div><dt>Term</dt><dd id="term-value">0</dd></div>
+          <div><dt>Committed phase</dt><dd id="commit-value">−</dd></div>
+          <div><dt>Selection</dt><dd id="reason-value">standby</dd></div>
+        </dl>
+      </section>
+
+      <section class="peer-register" aria-labelledby="peer-title">
+        <div class="rail-heading"><h2 id="peer-title">Road processes</h2><span id="peer-count">0 / 4 online</span></div>
+        <div id="peer-list" class="peer-list"></div>
+      </section>
+
+      <section class="incident-register" aria-labelledby="incident-title">
+        <div class="rail-heading"><h2 id="incident-title">Crash monitor</h2><span id="incident-count">0 crashes</span></div>
+        <ol id="incident-list" class="incident-list" aria-live="polite">
+          <li class="empty-register"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="m7 16 6 6L26 8"/></svg><span>No car collisions detected</span></li>
+        </ol>
+      </section>
+    </aside>
+  </main>
+</body>
+</html>

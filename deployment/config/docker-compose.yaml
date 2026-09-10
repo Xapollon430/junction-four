@@ -1,0 +1,109 @@
+services:
+  north:
+    image: junction-four-app:local
+    build:
+      context: ../..
+      dockerfile: deployment/docker/app.Dockerfile
+    container_name: north
+    hostname: north
+    init: true
+    command: ["python", "-m", "junction.node", "--id", "north"]
+    environment: &road-environment
+      PEER_LISTEN_HOST: "0.0.0.0"
+      PEER_NORTH_HOST: "north"
+      PEER_EAST_HOST: "east"
+      PEER_SOUTH_HOST: "south"
+      PEER_WEST_HOST: "west"
+      CONTROL_HOST: "0.0.0.0"
+      CONTROL_PORT: "7200"
+      AUTO_CARS: "false"
+      DATA_DIR: "/data"
+    healthcheck: &road-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7200/health', timeout=1)"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+    volumes:
+      - north-data:/data
+
+  east:
+    image: junction-four-app:local
+    container_name: east
+    hostname: east
+    init: true
+    command: ["python", "-m", "junction.node", "--id", "east"]
+    environment: *road-environment
+    healthcheck: *road-health
+    volumes:
+      - east-data:/data
+
+  south:
+    image: junction-four-app:local
+    container_name: south
+    hostname: south
+    init: true
+    command: ["python", "-m", "junction.node", "--id", "south"]
+    environment: *road-environment
+    healthcheck: *road-health
+    volumes:
+      - south-data:/data
+
+  west:
+    image: junction-four-app:local
+    container_name: west
+    hostname: west
+    init: true
+    command: ["python", "-m", "junction.node", "--id", "west"]
+    environment: *road-environment
+    healthcheck: *road-health
+    volumes:
+      - west-data:/data
+
+  visualizer:
+    image: junction-four-app:local
+    container_name: visualizer
+    hostname: visualizer
+    init: true
+    command: ["python", "-m", "junction.visualizer"]
+    environment:
+      PEER_NORTH_HOST: "north"
+      PEER_EAST_HOST: "east"
+      PEER_SOUTH_HOST: "south"
+      PEER_WEST_HOST: "west"
+      VISUALIZER_HOST: "0.0.0.0"
+      DATA_DIR: "/data"
+    depends_on:
+      north: { condition: service_healthy }
+      east: { condition: service_healthy }
+      south: { condition: service_healthy }
+      west: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/state', timeout=1)"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+    ports:
+      - "8080:8080"
+    volumes:
+      - visualizer-data:/data
+
+  workload:
+    image: junction-four-workload:local
+    build:
+      context: ../..
+      dockerfile: deployment/docker/workload.Dockerfile
+    container_name: workload
+    hostname: workload
+    init: true
+    environment:
+      OBSERVER_URL: "http://visualizer:8080"
+      ROAD_API_PORT: "7200"
+    depends_on:
+      visualizer: { condition: service_healthy }
+
+volumes:
+  north-data:
+  east-data:
+  south-data:
+  west-data:
+  visualizer-data:

@@ -1,0 +1,173 @@
+/* Signal colors carry state. The rest of the observer stays neutral. */
+:root {
+  --page: #dce0db;
+  --panel: #f5f4ec;
+  --ink: #182320;
+  --muted: #5b6762;
+  --line: #a5aea8;
+  --road: #283331;
+  --road-line: #929c97;
+  --rail: #192623;
+  --green: #5de38d;
+  --yellow: #ffd45c;
+  --red: #ff7066;
+  --shadow: 0 14px 34px rgba(24, 34, 31, 0.14), 0 3px 8px rgba(24, 34, 31, 0.1);
+  font-family: "Avenir Next", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--page);
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+html { min-width: 320px; background: var(--page); }
+body { min-height: 100vh; margin: 0; overflow-x: hidden; background: var(--page); }
+a { color: inherit; }
+a:focus-visible { outline: 3px solid #256b91; outline-offset: 4px; }
+
+.masthead {
+  min-height: 70px;
+  padding: 12px clamp(18px, 3vw, 42px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  color: #f4f6f3;
+  background: #172320;
+  border-bottom: 4px solid #aeb7b1;
+}
+
+.identity { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.identity svg { width: 36px; height: 36px; flex: 0 0 auto; fill: var(--yellow); }
+.identity svg circle { fill: #172320; }
+.identity strong, .identity small { display: block; }
+.identity strong { font-size: 1.05rem; letter-spacing: -0.01em; }
+.identity small { margin-top: 2px; color: #c6cfca; font-size: 0.7rem; letter-spacing: 0.06em; }
+
+.system-line { min-width: 0; display: flex; align-items: center; gap: 9px; font-size: 0.8rem; }
+.system-line i { width: 11px; height: 11px; flex: 0 0 auto; border: 2px solid #f0f4f1; border-radius: 50%; background: var(--yellow); }
+.system-line i[data-state="online"] { background: var(--green); }
+.system-line i[data-state="fault"] { background: var(--red); }
+.system-line time { margin-left: 10px; padding-left: 15px; color: #aab6b0; border-left: 1px solid #64716c; font: 0.76rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+.workbench {
+  width: min(1360px, 100%);
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 38px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: clamp(18px, 2.5vw, 32px);
+  align-items: start;
+}
+
+.intersection-module, .telemetry { width: 100%; min-width: 0; max-width: 100%; }
+.intersection-module { padding: clamp(16px, 2vw, 26px); background: var(--panel); border-radius: 14px; box-shadow: var(--shadow); }
+
+.module-heading {
+  min-height: 68px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+h1, h2, p { margin: 0; }
+h1 { font-size: clamp(1.5rem, 2.2vw, 2.15rem); line-height: 1; letter-spacing: -0.03em; }
+.module-heading p { margin-top: 8px; color: var(--muted); font-size: 0.86rem; }
+.phase-readout { min-width: 126px; padding: 8px 11px 9px; text-align: right; color: var(--green); background: var(--ink); border-radius: 6px 6px 0 0; font: 0.78rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.phase-readout strong, .phase-readout span { display: block; }
+.phase-readout strong { letter-spacing: 0.05em; }
+.phase-readout span { margin-top: 3px; color: #b2beb8; font-size: 0.68rem; }
+
+/* The intersection scales as one SVG on desktop and mobile. */
+.scope-frame { position: relative; overflow: hidden; background: #c9ceca; border: 7px solid #202b28; border-radius: 10px; box-shadow: inset 0 7px 22px rgba(0, 0, 0, 0.19); }
+#intersection { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; }
+.ground { fill: #c9ceca; }
+.road { fill: var(--road); }
+.lane-rule { fill: none; stroke: var(--road-line); stroke-width: 2; stroke-dasharray: 18 16; }
+.stop-rule { fill: none; stroke: #f2f0df; stroke-width: 6; }
+.traffic-signal > rect { fill: #111a18; stroke: #82908a; stroke-width: 2; }
+.traffic-signal .bulb { fill: #3b4642; stroke: #78847f; stroke-width: 1; }
+.traffic-signal[data-state="red"] .red { fill: var(--red); stroke: #fff0ed; stroke-width: 2; }
+.traffic-signal[data-state="yellow"] .yellow { fill: var(--yellow); stroke: #fff7d7; stroke-width: 2; }
+.traffic-signal[data-state="green"] .green { fill: var(--green); stroke: #e5ffed; stroke-width: 2; }
+.traffic-signal text { fill: #e8ece7; font: 900 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-anchor: middle; }
+
+.queue-readout rect { fill: rgba(245, 244, 236, 0.96); stroke: #737f79; }
+.queue-readout text { fill: #26312e; font: 800 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-anchor: middle; }
+.queue-readout tspan { fill: #22688e; font-size: 18px; }
+
+.vehicle-entity rect { fill: #efba37; stroke: #15201d; stroke-width: 2; }
+.vehicle-entity path { fill: #e5e9e4; }
+.vehicle-entity.crashed rect { fill: var(--red); }
+.collision-marker circle { fill: rgba(189, 56, 52, 0.26); stroke: var(--red); stroke-width: 5; }
+.collision-marker path { fill: none; stroke: #fff4ef; stroke-width: 7; stroke-linecap: round; }
+
+.critical-banner { position: absolute; right: 16px; bottom: 16px; width: min(370px, calc(100% - 32px)); padding: 12px 15px; color: #fff8f5; background: #902b28; border-radius: 8px; box-shadow: 0 10px 24px rgba(57, 10, 8, 0.3); }
+.critical-banner span, .critical-banner strong { display: block; }
+.critical-banner span { margin-bottom: 3px; font-size: 0.67rem; font-weight: 900; letter-spacing: 0.09em; text-transform: uppercase; }
+.critical-banner strong { font-size: 0.86rem; line-height: 1.35; }
+.observer-note { padding-top: 13px; color: var(--muted); font: 0.7rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-align: right; }
+
+.telemetry { color: #edf2ee; background: var(--rail); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+.telemetry section { padding: 21px 22px; }
+.telemetry section + section { border-top: 1px solid #52605b; }
+.telemetry h2 { color: #c5cfca; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+.leader-instrument { background: #202e2b; }
+.leader-name { margin: 17px 0 20px; overflow: hidden; color: var(--green); font: 800 clamp(2rem, 4vw, 3.25rem)/0.92 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: -0.04em; text-overflow: ellipsis; }
+.leader-facts { margin: 0; display: grid; grid-template-columns: 0.6fr 1.2fr 1fr; gap: 10px; }
+.leader-facts div { min-width: 0; }
+.leader-facts dt { margin-bottom: 4px; color: #8f9d97; font-size: 0.61rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.leader-facts dd { margin: 0; overflow: hidden; color: #eff3ef; font: 0.75rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
+
+.rail-heading { margin-bottom: 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.rail-heading > span { color: #95a39d; font: 0.66rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.peer-list { display: grid; }
+.peer-row { min-height: 47px; display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 10px; border-top: 1px solid #3b4945; }
+.peer-row i { width: 8px; height: 8px; border-radius: 50%; background: #66736d; }
+.peer-row[data-connected="true"] i { background: var(--green); }
+.peer-row strong { font-size: 0.78rem; }
+.peer-row span { color: #a2afa9; font: 0.63rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.peer-row[data-light="green"] strong { color: var(--green); }
+.peer-row[data-light="yellow"] strong { color: var(--yellow); }
+
+.incident-register { min-height: 190px; }
+.incident-list { max-height: 270px; margin: 0; padding: 0; overflow: auto; list-style: none; }
+.incident-item, .empty-register { border-top: 1px solid #3b4945; }
+.incident-item { padding: 12px 0; }
+.incident-item time, .incident-item strong, .incident-item span { display: block; }
+.incident-item time { margin-bottom: 4px; color: var(--red); font: 0.64rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.incident-item strong { color: #fff1ee; font-size: 0.72rem; text-transform: uppercase; }
+.incident-item span { margin-top: 4px; color: #bac4bf; font-size: 0.76rem; line-height: 1.4; }
+.empty-register { min-height: 130px; display: grid; place-content: center; justify-items: center; gap: 9px; color: #96a39d; font-size: 0.76rem; }
+.empty-register svg { width: 30px; fill: none; stroke: var(--green); stroke-width: 2; }
+
+/* Move the status rail below the intersection when it stops fitting beside it. */
+@media (max-width: 980px) {
+  .workbench { grid-template-columns: 1fr; }
+  .telemetry { display: grid; grid-template-columns: 0.8fr 1fr 1fr; }
+  .telemetry section + section { border-top: 0; border-left: 1px solid #52605b; }
+  .leader-facts { grid-template-columns: 1fr; }
+  .incident-register { min-height: 220px; }
+}
+
+@media (max-width: 680px) {
+  .masthead { min-height: 64px; }
+  .identity small, #system-status, .system-line time { display: none; }
+  .workbench { padding: 12px; }
+  .intersection-module { padding: 13px; }
+  .module-heading { min-height: 60px; margin-bottom: 12px; display: grid; grid-template-columns: minmax(0, 1fr) 94px; gap: 10px; }
+  .module-heading h1 { font-size: 1.35rem; }
+  .module-heading p { max-width: 26ch; font-size: 0.73rem; }
+  .phase-readout { min-width: 0; padding-inline: 7px; }
+  .scope-frame { border-width: 5px; }
+  .observer-note { text-align: left; }
+  .telemetry { display: block; }
+  .telemetry section + section { border-top: 1px solid #52605b; border-left: 0; }
+  .leader-facts { grid-template-columns: 0.6fr 1.2fr 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}
